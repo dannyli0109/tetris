@@ -23,8 +23,10 @@ Cell.prototype.display = function() {
 
 Cell.prototype.coliding = function(i, j) {
   if (this.i == i && this.j == j && this.occupied) {
-    game.board[i][j - 1].occupied = true;
-    return true
+    if (j > 0) {
+      game.board[i][j - 1].occupied = true;
+      return true
+    }
   }
   return false
 }

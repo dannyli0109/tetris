@@ -1,9 +1,8 @@
 var rows = 12;
 var cols = 22;
 var w = 40;
-var y = 0;
-var x = 0;
-var atBottom = false;
+var shape = [[0,0], [1,0], [2,0], [3,0]];
+var newShape = false;
 
 
 var game = {
@@ -34,70 +33,66 @@ function draw() {
     }
   }
 
-  newBlock()
+  for (var num = 0; num < shape.length; num++) {
+    if(newShape) {
+      newShape = false;
+      shape = [[0,0], [1,0], [2,0], [3,0]]
+      break;
+    }
+    newBlock(shape[num][0], shape[num][1])
+  }
 
 }
 
-function newBlock() {
+function newBlock(x, y) {
+
   var roundJ = ceil(y/w);
-  var roundI = ceil(x/w);
+  var roundI = x;
   for (var i = 0; i < rows; i++) {
     for (var j = 0; j < cols; j++) {
       if (game.board[i][j].coliding(roundI, roundJ)) {
-        console.log("coliding");
-        x = 0;
-        y = 0;
+        for (var index = 0; index < shape.length; index++) {
+          game.board[shape[index][0]][roundJ - 1].occupied = true
+        }
+        newShape = true;
         return
       }
     }
   }
 
-  if (roundJ == cols - 1) {
-    game.board[roundI][roundJ].occupied = true
-    x = 0;
-    y = 0;
+  if (roundJ == cols) {
+    for (var index = 0; index < shape.length; index++) {
+      game.board[shape[index][0]][roundJ - 1].occupied = true
+    }
+    newShape = true;
     return
   }
   fill(100)
-  rect(x, y, 40,40)
-  y += 3
-  // console.log(round(y/w));
-  // y = 880 - w
-  // fill(100)
-  // rect(x, y, 40,40)
-  //
-  //
-  // for (var i = 0; i < rows; i++) {
-  //   for (var j = 0; j < cols; j++) {
-  //     if (game.board[i][j].x == x && game.board[i][j].y == y) {
-  //       game.board[i][j].occupied = true;
+  rect(x*w, y, 40,40)
+  shape[x][1] += 10
 
-  //     }
-  //   }
-  // }
 }
 
 
 
-function keyPressed() {
-  if (keyCode == 39) {
-    if (x < 480 - w) {
-      var roundJ = (y/w);
-      var roundI = round((x + w)/w);
-      if (!game.board[roundI][roundJ].occupied) {
-        x += w
-
-      }
-    }
-
-  }
-  if (keyCode == 37) {
-    if (x > 0) {
-      var roundJ = round(y/w);
-      var roundI = round((x - w)/w);
-      if (!game.board[roundI][roundJ].occupied) {
-        x -= w
-      }
-    }
-  }
-}
+// function keyPressed() {
+//   if (keyCode == 39) {
+//     if (x < 480 - w) {
+//       var roundJ = round(y/w);
+//       var roundI = round((x + w)/w);
+//       if (!game.board[roundI][roundJ].occupied) {
+//         x += w
+//       }
+//     }
+//
+//   }
+//   if (keyCode == 37) {
+//     if (x > 0) {
+//       var roundJ = round(y/w);
+//       var roundI = round((x - w)/w);
+//       if (!game.board[roundI][roundJ].occupied) {
+//         x -= w
+//       }
+//     }
+//   }
+// }
