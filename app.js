@@ -1,7 +1,7 @@
 var rows = 12;
 var cols = 22;
 var w = 40;
-var shape = [[0,0], [1,0], [2,0], [3,0]];
+var shape = [[4,0], [5,0], [6,0], [7,0]];
 var newShape = false;
 
 
@@ -36,15 +36,15 @@ function draw() {
   for (var num = 0; num < shape.length; num++) {
     if(newShape) {
       newShape = false;
-      shape = [[0,0], [1,0], [2,0], [3,0]]
+      shape = [[4,0], [5,0], [6,0], [7,0]]
       break;
     }
-    newBlock(shape[num][0], shape[num][1])
+    newBlock(shape[num][0], shape[num][1],num)
   }
 
 }
 
-function newBlock(x, y) {
+function newBlock(x, y,index) {
 
   var roundJ = ceil(y/w);
   var roundI = x;
@@ -69,30 +69,39 @@ function newBlock(x, y) {
   }
   fill(100)
   rect(x*w, y, 40,40)
-  shape[x][1] += 10
+  shape[index][1] += 5
+
+
+
 
 }
 
 
 
-// function keyPressed() {
-//   if (keyCode == 39) {
-//     if (x < 480 - w) {
-//       var roundJ = round(y/w);
-//       var roundI = round((x + w)/w);
-//       if (!game.board[roundI][roundJ].occupied) {
-//         x += w
-//       }
-//     }
-//
-//   }
-//   if (keyCode == 37) {
-//     if (x > 0) {
-//       var roundJ = round(y/w);
-//       var roundI = round((x - w)/w);
-//       if (!game.board[roundI][roundJ].occupied) {
-//         x -= w
-//       }
-//     }
-//   }
-// }
+function keyPressed() {
+  if (keyCode == 39) {
+    var rightMost = shape[shape.length - 1]
+    if (rightMost[0]*w < 480 - w) {
+      var roundJ = round(rightMost[1]/w);
+      // var roundI = round((x + w)/w);
+      if (!game.board[rightMost[0]][roundJ].occupied) {
+        for (var index = 0; index < shape.length; index++) {
+          shape[index][0] +=1
+        }
+      }
+    }
+
+  }
+  if (keyCode == 37) {
+    var leftMost = shape[0]
+    if (leftMost[0]*w > 0) {
+      var roundJ = round(leftMost[1]/w);
+
+      if (!game.board[leftMost[0]][roundJ].occupied) {
+        for (var index = 0; index < shape.length; index++) {
+          shape[index][0] -=1
+        }
+      }
+    }
+  }
+}
