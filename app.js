@@ -3,10 +3,10 @@ var cols = 22;
 var w = 40;
 var iBlock = [[4,0], [5,0], [6,0], [7,0]];
 var zBlock = [[4,0], [5,0], [5,w], [6,w]];
-var tBlock = [[4,w], [5,0],[5,w], [6,w]]
-var jBlock = [[4,0], [5,0], [6,0], [6,w]]
-var lBlock = [[4,0], [4,w], [5,0], [6,0]]
-var oBlock = [[5,0], [5,w], [6,0], [6,w]]
+var tBlock = [[4,w], [5,0], [5,w], [6,w]];
+var jBlock = [[4,0], [5,0], [6,0], [6,w]];
+var lBlock = [[4,0], [4,w], [5,0], [6,0]];
+var oBlock = [[5,0], [5,w], [6,0], [6,w]];
 var shapes = [iBlock, zBlock, tBlock, jBlock, lBlock, oBlock]
 var currentShape
 var newShape = true;
@@ -32,11 +32,24 @@ var game = {
             count ++
           }
         }
+        // if all of the colom of a row ard filled, change them back to non-fill
       if (count == (rows)) {
         for (var index = 0; index < rows; index++) {
           game.board[index][j].occupied = false;
         }
+
+        // after clearing, we need to change the all occupied cells y position + 1
+        // from line j to line 0, move occupied status to the line below it, and set the current occupie status to false
+        for (var num = 1; num <= j; num++) {
+          for (var index = 0; index < rows; index++) {
+            if(game.board[index][j - num].occupied) {
+              game.board[index][j - num].occupied = false
+              game.board[index][j - num + 1].occupied = true
+            }
+          }
+        }
       }
+
     }
   }
 }
