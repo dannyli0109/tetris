@@ -1,3 +1,4 @@
+
 var rows = 12;
 var cols = 22;
 var w = 40;
@@ -10,13 +11,57 @@ var iOffsets = [
 ];
 
 var zBlock = [[4,0], [5,0], [5,w], [6,w]];
+var zOffsets = [
+  [[+0,+0], [-1,+1], [-2,+0], [-3,+1]],
+  [[-0,-0], [+1,-1], [+2,-0], [+3,-1]],
+  [[+0,+0], [-1,+1], [-2,+0], [-3,+1]],
+  [[-0,-0], [+1,-1], [+2,-0], [+3,-1]]
+];
+
 var tBlock = [[4,w], [5,0], [5,w], [6,w]];
+var tOffsets = [
+  [[+0,-1], [-1,+1], [+0,+0], [-2,+1]],
+  [[+2,-0], [+1,-0], [+0,-1], [+0,-2]],
+  [[+0,+2], [+1,+0], [+0,+1], [+2,+0]],
+  [[-2,-1], [-1,-1], [+0,+0], [+0,+1]]
+];
+
 var jBlock = [[4,0], [5,0], [6,0], [6,w]];
+var jOffsets = [
+  [[+1,+0], [+0,+1], [-1,+2], [-2,+1]],
+  [[+1,+2], [+0,+1], [-1,+0], [+0,-1]],
+  [[-2,+0], [-1,-1], [+0,-2], [+1,-1]],
+  [[+0,-2], [+1,-1], [+2,+0], [+1,+1]]
+];
+
 var lBlock = [[4,0], [4,w], [5,0], [6,0]];
+var lOffsets = [
+  [[+1,+0], [+0,-1], [+0,+1], [-1,+2]],
+  [[+1,+1], [+2,+0], [+0,+0], [-1,-1]],
+  [[-2,+1], [-1,+2], [-1,+0], [+0,-1]],
+  [[+0,-2], [-1,-1], [+1,-1], [+2,+0]]
+]
+
 var oBlock = [[5,0], [5,w], [6,0], [6,w]];
-var shapes = [iBlock, zBlock, tBlock, jBlock, lBlock, oBlock]
+var oOffsets = [
+  [[0,0], [0,0], [0,0], [0,0]],
+  [[0,0], [0,0], [0,0], [0,0]],
+  [[0,0], [0,0], [0,0], [0,0]],
+  [[0,0], [0,0], [0,0], [0,0]]
+]
+
+var sBlock = [[4,w], [5,w], [5,0], [6,0]]
+var sOffsets = [
+  [[+0,-1], [-1,+0], [+0,+1], [-1,+2]],
+  [[+0,+1], [+1,+0], [+0,-1], [+1,-2]],
+  [[+0,-1], [-1,+0], [+0,+1], [-1,+2]],
+  [[+0,+1], [+1,+0], [+0,-1], [+1,-2]]
+]
+
+var shapes = [iBlock, zBlock, tBlock, jBlock, lBlock, oBlock, sBlock]
+var offsets = [iOffsets, zOffsets, tOffsets, jOffsets, lOffsets, oOffsets, sOffsets]
 var currentShape
-var currentIndex = 0
+var currentIndex
 var rotateState = 0
 var newShape = true;
 
@@ -81,7 +126,9 @@ function draw() {
     game.checkClear()
     // randomly pick an element in the shapes array
     // clone the array instead of the reference
-    currentShape = shapes[0].map(function(arr) {
+    currentIndex = floor(random(0, shapes.length))
+    console.log(currentIndex);
+    currentShape = shapes[currentIndex].map(function(arr) {
       return arr.slice();
     })
     newShape = false;
@@ -136,8 +183,9 @@ function rotateShape(shape) {
   }
   var rotateOffsetState = rotateState % 4
   for (var i = 0; i < shape.length; i++) {
-    shape[i][0] += iOffsets[rotateOffsetState][i][0]
-    shape[i][1] += iOffsets[rotateOffsetState][i][1] * w
+    shape[i][0] += offsets[currentIndex][rotateOffsetState][i][0]
+    shape[i][1] += offsets[currentIndex][rotateOffsetState][i][1] * w
+
   }
   rotateState++;
 }
@@ -145,16 +193,16 @@ function rotateShape(shape) {
 function isRotatable(shape) {
   var rotateOffsetState = rotateState % 4
   for (var i = 0; i < shape.length; i++) {
-    var roundJ = round((shape[i][1] + iOffsets[rotateOffsetState][i][1] * w)/w);
-    var newI = shape[i][0] + iOffsets[rotateOffsetState][i][0];
+    var roundJ = round((shape[i][1] + sOffsets[rotateOffsetState][i][1] * w)/w);
+    var newI = shape[i][0] + sOffsets[rotateOffsetState][i][0];
     if (roundJ >= cols) {
       return false;
     }
     if (
-      shape[i][0] + iOffsets[rotateOffsetState][i][0] < 0 ||
-      shape[i][0] + iOffsets[rotateOffsetState][i][0] >= rows ||
-      shape[i][1] + iOffsets[rotateOffsetState][i][1] * w < 0 ||
-      shape[i][1] + iOffsets[rotateOffsetState][i][1] * w > 880 ||
+      shape[i][0] + sOffsets[rotateOffsetState][i][0] < 0 ||
+      shape[i][0] + sOffsets[rotateOffsetState][i][0] >= rows ||
+      shape[i][1] + sOffsets[rotateOffsetState][i][1] * w < 0 ||
+      shape[i][1] + sOffsets[rotateOffsetState][i][1] * w > 880 ||
       game.board[newI][roundJ].occupied
     ) {
       return false
