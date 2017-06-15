@@ -65,7 +65,7 @@ var currentShape
 var currentIndex
 var rotateState = 0
 var newShape = true;
-var state = 0;
+var state = -1;
 var pause = false;
 
 
@@ -115,6 +115,12 @@ var game = {
 function setup() {
   createCanvas(481,881)
   game.initboard()
+  noLoop()
+}
+
+function start() {
+  state ++;
+  loop()
 }
 
 function draw() {
@@ -124,6 +130,10 @@ function draw() {
       game.board[i][j].display()
     }
   }
+  if (state < 0) {
+    return
+  }
+
   if (state > 0) {
     noLoop()
   }
@@ -161,9 +171,6 @@ function draw() {
 }
 
 function newBlock(x, y,index) {
-
-
-
   var roundJ = ceil(y/w);
   var roundI = x;
 
@@ -233,11 +240,17 @@ function isRotatable(shape) {
 
 
 function keyPressed() {
+  if (state < 0) {
+    if (keyCode == 13) {
+        start()
+    }
+    return
+  }
   if (state > 0) {
     if (keyCode == 13) {
       game.initboard()
       state = 0;
-      loop();
+      loop()
     }
   }else {
 
@@ -249,6 +262,10 @@ function keyPressed() {
       } else {
         loop()
       }
+    }
+
+    if (pause) {
+      return
     }
 
     // move right
