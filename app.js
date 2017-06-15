@@ -1,13 +1,15 @@
 var rows = 12;
 var cols = 22;
 var w = 40;
-var lineBlock = [[4,0], [5,0], [6,0], [7,0]];
+var iBlock = [[4,0], [5,0], [6,0], [7,0]];
 var zBlock = [[4,0], [5,0], [5,w], [6,w]];
-var shapes = [lineBlock, zBlock]
+var tBlock = [[4,w], [5,0],[5,w], [6,w]]
+var jBlock = [[4,0], [5,0], [6,0], [6,w]]
+var lBlock = [[4,0], [4,w], [5,0], [6,0]]
+var oBlock = [[5,0], [5,w], [6,0], [6,w]]
+var shapes = [iBlock, zBlock, tBlock, jBlock, lBlock, oBlock]
 var currentShape
 var newShape = true;
-
-
 
 
 var game = {
@@ -20,6 +22,21 @@ var game = {
         rowArray.push(new Cell(i, j, w))
       }
       game.board.push(rowArray)
+    }
+  },
+  checkClear: function() {
+    for (var j = 0; j < cols; j++) {
+      var count = 0
+      for (var i = 0; i < rows; i++) {
+          if (game.board[i][j].occupied) {
+            count ++
+          }
+        }
+      if (count == (rows)) {
+        for (var index = 0; index < rows; index++) {
+          game.board[index][j].occupied = false;
+        }
+      }
     }
   }
 }
@@ -38,26 +55,27 @@ function draw() {
     }
   }
 
-    if(newShape) {
+  if(newShape) {
+    game.checkClear()
+    // randomly pick an element in the shapes array
+    // clone the array instead of the reference
+    currentShape = shapes[floor(random(0,shapes.length))].map(function(arr) {
+      return arr.slice();
+    })
+    newShape = false;
+  }
+  for (var num = 0; num < currentShape.length; num++) {
+    newBlock(currentShape[num][0], currentShape[num][1],num)
+  }
 
-      // clone the array instead of the reference
-      currentShape = shapes[round(random(0,1))].map(function(arr) {
-        return arr.slice();
-      })
-      newShape = false;
+  for (var num = 0; num < currentShape.length; num++) {
+    if (newShape) {
+      break;
     }
-    for (var num = 0; num < currentShape.length; num++) {
-      newBlock(currentShape[num][0], currentShape[num][1],num)
-    }
-
-    for (var num = 0; num < currentShape.length; num++) {
-      if (newShape) {
-        break;
-      }
-      fill(100)
-      rect(currentShape[num][0]*w, currentShape[num][1], 40,40)
-      currentShape[num][1] += 5
-    }
+    fill(100)
+    rect(currentShape[num][0]*w, currentShape[num][1], 40,40)
+    currentShape[num][1] += 5
+  }
 
 }
 
