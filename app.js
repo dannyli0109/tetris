@@ -2,6 +2,7 @@
 var rows = 12;
 var cols = 22;
 var w = 40;
+var speed = 4;
 var iBlock = [[4,0], [5,0], [6,0], [7,0]];
 var iOffsets = [
   [[0,0], [-1,+1], [-2,+2], [-3,+3]],
@@ -12,16 +13,16 @@ var iOffsets = [
 
 var zBlock = [[4,0], [5,0], [5,w], [6,w]];
 var zOffsets = [
-  [[+0,+0], [-1,+1], [-2,+0], [-3,+1]],
-  [[-0,-0], [+1,-1], [+2,-0], [+3,-1]],
-  [[+0,+0], [-1,+1], [-2,+0], [-3,+1]],
-  [[-0,-0], [+1,-1], [+2,-0], [+3,-1]]
+  [[+1,+0], [+0,+1], [-1,+0], [-2,+1]],
+  [[-1,-0], [+0,-1], [+1,-0], [+2,-1]],
+  [[+1,+0], [+0,+1], [-1,+0], [-2,+1]],
+  [[-1,-0], [+0,-1], [+1,-0], [+2,-1]]
 ];
 
 var tBlock = [[4,w], [5,0], [5,w], [6,w]];
 var tOffsets = [
-  [[+0,-1], [-1,+1], [+0,+0], [-2,+1]],
-  [[+2,-0], [+1,-0], [+0,-1], [+0,-2]],
+  [[+0,-1], [+0,+1], [-1,+0], [-2,+1]],
+  [[+2,-0], [+0,+0], [+1,-1], [+0,-2]],
   [[+0,+2], [+1,+0], [+0,+1], [+2,+0]],
   [[-2,-1], [-1,-1], [+0,+0], [+0,+1]]
 ];
@@ -64,6 +65,8 @@ var currentShape
 var currentIndex
 var rotateState = 0
 var newShape = true;
+var state = 0;
+var pause = false;
 
 
 var game = {
@@ -121,9 +124,15 @@ function draw() {
       game.board[i][j].display()
     }
   }
+  if (state > 0) {
+    noLoop()
+  }
+
+
 
   if(newShape) {
     game.checkClear()
+
     // randomly pick an element in the shapes array
     // clone the array instead of the reference
     currentIndex = floor(random(0, shapes.length))
@@ -134,6 +143,8 @@ function draw() {
     newShape = false;
     rotateState = 0;
   }
+
+
   for (var num = 0; num < currentShape.length; num++) {
     newBlock(currentShape[num][0], currentShape[num][1],num)
   }
@@ -144,20 +155,29 @@ function draw() {
     }
     fill(100)
     rect(currentShape[num][0]*w, currentShape[num][1], 40,40)
-    currentShape[num][1] += 5
+    currentShape[num][1] += speed
   }
 
 }
 
 function newBlock(x, y,index) {
 
+
+
   var roundJ = ceil(y/w);
   var roundI = x;
+
+
+
   for (var i = 0; i < rows; i++) {
     for (var j = 0; j < cols; j++) {
       if (game.board[i][j].coliding(roundI, roundJ)) {
         for (var index = 0; index < currentShape.length; index++) {
           roundJ = ceil(currentShape[index][1]/w)
+          if (roundJ-1 <0) {
+            gameOver()
+            return
+          }
           game.board[currentShape[index][0]][roundJ - 1].occupied = true
         }
         newShape = true;
@@ -213,38 +233,66 @@ function isRotatable(shape) {
 
 
 function keyPressed() {
-  if (keyCode == 32) {
-    rotateShape(currentShape)
-  }
+  if (state > 0) {
+    if (keyCode == 13) {
+      game.initboard()
+      state = 0;
+      loop();
+    }
+  }else {
 
-  if (keyCode == 39) {
-    for (var i = 0; i < currentShape.length; i++) {
-      var roundJ = round(currentShape[i][1]/w)
-      if (currentShape[i][0] * w >= 480 - w) {
-        return
-      }
-      if (game.board[currentShape[i][0]+1][roundJ].occupied) {
-        return
-      }
-    }
-    for (var index = 0; index < currentShape.length; index++) {
-      currentShape[index][0] +=1
-    }
-  }
+    if (keyCode == 81) {
+      pause = !pause
 
-  if (keyCode == 37) {
-    for (var i = 0; i < currentShape.length; i++) {
-      var roundJ = round(currentShape[i][1]/w)
-      if (currentShape[i][0] * w <= 0) {
-        return
+      if (pause) {
+        noLoop()
+      } else {
+        loop()
       }
-      if (game.board[currentShape[i][0]-1][roundJ].occupied) {
-        return
-      }
-    }
-    for (var index = 0; index < currentShape.length; index++) {
-      currentShape[index][0] -=1
     }
 
+    // move right
+    if (keyCode == 32) {
+      rotateShape(currentShape)
+    }
+
+    if (keyCode == 39) {
+      for (var i = 0; i < currentShape.length; i++) {
+        var roundJ = round(currentShape[i][1]/w)
+        if (currentShape[i][0] * w >= 480 - w) {
+          return
+        }
+        if (game.board[currentShape[i][0]+1][roundJ].occupied) {
+          return
+        }
+      }
+      for (var index = 0; index < currentShape.length; index++) {
+        currentShape[index][0] +=1
+      }
+    }
+
+    // move left
+    if (keyCode == 37) {
+      for (var i = 0; i < currentShape.length; i++) {
+        var roundJ = round(currentShape[i][1]/w)
+        if (currentShape[i][0] * w <= 0) {
+          return
+        }
+        if (game.board[currentShape[i][0]-1][roundJ].occupied) {
+          return
+        }
+      }
+      for (var index = 0; index < currentShape.length; index++) {
+        currentShape[index][0] -=1
+      }
+    }
   }
+
+}
+
+
+function gameOver() {
+  console.log("gameOver");
+  state++;
+
 }

@@ -16,7 +16,11 @@ Cell.prototype.display = function() {
   rect(this.x, this.y, this.w, this.w)
 
   if(this.occupied) {
-    fill(100)
+    if (state > 0) {
+      fill(255,0,0)
+    } else {
+      fill(100)
+    }
     rect(this.x, this.y, this.w, this.w)
   }
 }
