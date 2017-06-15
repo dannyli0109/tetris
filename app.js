@@ -1,8 +1,13 @@
 var rows = 12;
 var cols = 22;
 var w = 40;
-var shape = [[4,0], [5,0], [6,0], [7,0]];
-var newShape = false;
+var lineBlock = [[4,0], [5,0], [6,0], [7,0]];
+var zBlock = [[4,0], [5,0], [5,w], [6,w]];
+var shapes = [lineBlock, zBlock]
+var currentShape
+var newShape = true;
+
+
 
 
 var game = {
@@ -33,14 +38,26 @@ function draw() {
     }
   }
 
-  for (var num = 0; num < shape.length; num++) {
     if(newShape) {
+
+      // clone the array instead of the reference
+      currentShape = shapes[round(random(0,1))].map(function(arr) {
+        return arr.slice();
+      })
       newShape = false;
-      shape = [[4,0], [5,0], [6,0], [7,0]]
-      break;
     }
-    newBlock(shape[num][0], shape[num][1],num)
-  }
+    for (var num = 0; num < currentShape.length; num++) {
+      newBlock(currentShape[num][0], currentShape[num][1],num)
+    }
+
+    for (var num = 0; num < currentShape.length; num++) {
+      if (newShape) {
+        break;
+      }
+      fill(100)
+      rect(currentShape[num][0]*w, currentShape[num][1], 40,40)
+      currentShape[num][1] += 5
+    }
 
 }
 
@@ -51,8 +68,9 @@ function newBlock(x, y,index) {
   for (var i = 0; i < rows; i++) {
     for (var j = 0; j < cols; j++) {
       if (game.board[i][j].coliding(roundI, roundJ)) {
-        for (var index = 0; index < shape.length; index++) {
-          game.board[shape[index][0]][roundJ - 1].occupied = true
+        for (var index = 0; index < currentShape.length; index++) {
+          roundJ = ceil(currentShape[index][1]/w)
+          game.board[currentShape[index][0]][roundJ - 1].occupied = true
         }
         newShape = true;
         return
@@ -61,45 +79,39 @@ function newBlock(x, y,index) {
   }
 
   if (roundJ == cols) {
-    for (var index = 0; index < shape.length; index++) {
-      game.board[shape[index][0]][roundJ - 1].occupied = true
+    for (var index = 0; index < currentShape.length; index++) {
+      roundJ = ceil(currentShape[index][1]/w)
+      game.board[currentShape[index][0]][roundJ - 1].occupied = true
     }
     newShape = true;
     return
   }
-  fill(100)
-  rect(x*w, y, 40,40)
-  shape[index][1] += 5
-
-
-
-
 }
 
 
 
 function keyPressed() {
   if (keyCode == 39) {
-    var rightMost = shape[shape.length - 1]
+    var rightMost = currentShape[currentShape.length - 1]
     if (rightMost[0]*w < 480 - w) {
       var roundJ = round(rightMost[1]/w);
       // var roundI = round((x + w)/w);
-      if (!game.board[rightMost[0]][roundJ].occupied) {
-        for (var index = 0; index < shape.length; index++) {
-          shape[index][0] +=1
+      if (!game.board[rightMost[0]+1][roundJ].occupied) {
+        for (var index = 0; index < currentShape.length; index++) {
+          currentShape[index][0] +=1
         }
       }
     }
 
   }
   if (keyCode == 37) {
-    var leftMost = shape[0]
+    var leftMost = currentShape[0]
     if (leftMost[0]*w > 0) {
       var roundJ = round(leftMost[1]/w);
 
-      if (!game.board[leftMost[0]][roundJ].occupied) {
-        for (var index = 0; index < shape.length; index++) {
-          shape[index][0] -=1
+      if (!game.board[leftMost[0]-1][roundJ].occupied) {
+        for (var index = 0; index < currentShape.length; index++) {
+          currentShape[index][0] -=1
         }
       }
     }
