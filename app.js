@@ -23,8 +23,8 @@ var tBlock = [[4,w], [5,0], [5,w], [6,w]];
 var tOffsets = [
   [[+0,-1], [+0,+1], [-1,+0], [-2,+1]],
   [[+2,-0], [+0,+0], [+1,-1], [+0,-2]],
-  [[+0,+2], [+1,+0], [+0,+1], [+2,+0]],
-  [[-2,-1], [-1,-1], [+0,+0], [+0,+1]]
+  [[+0,+2], [+0,+0], [+1,+1], [+2,+0]],
+  [[-2,+0], [+0,+0], [-1,+1], [+0,+2]]
 ];
 
 var jBlock = [[4,0], [5,0], [6,0], [6,w]];
@@ -220,16 +220,16 @@ function rotateShape(shape) {
 function isRotatable(shape) {
   var rotateOffsetState = rotateState % 4
   for (var i = 0; i < shape.length; i++) {
-    var roundJ = round((shape[i][1] + sOffsets[rotateOffsetState][i][1] * w)/w);
-    var newI = shape[i][0] + sOffsets[rotateOffsetState][i][0];
+    var roundJ = round((shape[i][1] + offsets[currentIndex][rotateOffsetState][i][1] * w)/w);
+    var newI = shape[i][0] + offsets[currentIndex][rotateOffsetState][i][0];
     if (roundJ >= cols) {
       return false;
     }
     if (
-      shape[i][0] + sOffsets[rotateOffsetState][i][0] < 0 ||
-      shape[i][0] + sOffsets[rotateOffsetState][i][0] >= rows ||
-      shape[i][1] + sOffsets[rotateOffsetState][i][1] * w < 0 ||
-      shape[i][1] + sOffsets[rotateOffsetState][i][1] * w > 880 ||
+      shape[i][0] + offsets[currentIndex][rotateOffsetState][i][0] < 0 ||
+      shape[i][0] + offsets[currentIndex][rotateOffsetState][i][0] >= rows ||
+      shape[i][1] + offsets[currentIndex][rotateOffsetState][i][1] * w < 0 ||
+      shape[i][1] + offsets[currentIndex][rotateOffsetState][i][1] * w > 880 ||
       game.board[newI][roundJ].occupied
     ) {
       return false
