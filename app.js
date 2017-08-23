@@ -251,6 +251,7 @@ function keyPressed() {
   if (state > 0) {
     if (keyCode == 13) {
       game.initboard()
+      document.querySelector(".prompt").textContent = "Press q to Pause"
       state = 0;
       loop()
     }
