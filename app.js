@@ -1,8 +1,8 @@
 
 var rows = 12;
 var cols = 22;
-var w = 40;
-var speed = 4;
+var w = 35;
+var speed = 3;
 var iBlock = [[4,0], [5,0], [6,0], [7,0]];
 var iOffsets = [
   [[0,0], [-1,+1], [-2,+2], [-3,+3]],
@@ -113,9 +113,10 @@ var game = {
 
 
 function setup() {
-  createCanvas(481,881)
+  var canvas = createCanvas(421,771)
   game.initboard()
   noLoop()
+  canvas.parent("game-container")
 }
 
 function start() {
@@ -164,7 +165,7 @@ function draw() {
       break;
     }
     fill(100)
-    rect(currentShape[num][0]*w, currentShape[num][1], 40,40)
+    rect(currentShape[num][0]*w, currentShape[num][1], w,w)
     currentShape[num][1] += speed
   }
 
@@ -242,6 +243,7 @@ function isRotatable(shape) {
 function keyPressed() {
   if (state < 0) {
     if (keyCode == 13) {
+        document.querySelector(".prompt").textContent = "Press q to Pause"
         start()
     }
     return
@@ -258,8 +260,10 @@ function keyPressed() {
       pause = !pause
 
       if (pause) {
+        document.querySelector(".prompt").textContent = "Press q to Resume"
         noLoop()
       } else {
+        document.querySelector(".prompt").textContent = "Press q to Pause"
         loop()
       }
     }
@@ -310,6 +314,6 @@ function keyPressed() {
 
 function gameOver() {
   console.log("gameOver");
+  document.querySelector(".prompt").textContent = "Game Over! Press Enter to Restart"
   state++;
-
 }

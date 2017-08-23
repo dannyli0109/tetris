@@ -9,13 +9,13 @@ var Cell = function(i, j, w) {
 
 Cell.prototype.display = function() {
 
-  stroke(0, 0, 0, 100)
+  stroke(200)
   noFill()
-  strokeWeight(2)
-
+  strokeWeight(1)
   rect(this.x, this.y, this.w, this.w)
 
   if(this.occupied) {
+    strokeWeight(2)
     if (state > 0) {
       fill(255,0,0)
     } else {
